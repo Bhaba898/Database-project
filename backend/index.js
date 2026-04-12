@@ -9,7 +9,7 @@ const expenses=require("./routes/expenses.js");
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://database-project-lime.vercel.app/login",
   credentials: true,                
 }));
 
