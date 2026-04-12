@@ -23,7 +23,7 @@ const register = async (req, res) => {
       [userName, hashed]
     );
     req.session.userId = result.insertId;
-    res.json({ message: "Registered successfully" });
+    res.status(200).json({ message: "Registered successfully" });
   } 
   catch (err) {
     res.status(500).json({ error: err.message });

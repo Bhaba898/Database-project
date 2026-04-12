@@ -8,7 +8,7 @@ const addExpense = async (req, res) => {
   try {
     const { categoryId, amount, description } = req.body;
     await db.query(
-      "INSERT INTO expenses (user_id, categoryId, amount, description) VALUES (?, ?, ?, ?)",
+      "INSERT INTO expenses (user_id, category_id, amount, description) VALUES (?, ?, ?, ?)",
       [req.session.userId, categoryId, amount, description]
     );
     res.json({ message: "Expense added" });
@@ -41,7 +41,7 @@ const getExpense = async (req, res) => {
     const [rows] = await db.query(`
       SELECT e.id, e.amount, e.description, e.created_at, c.name AS category
       FROM expenses e
-      JOIN categories c ON e.categoryId = c.id
+      JOIN categories c ON e.category_id = c.id
       WHERE e.user_id = ?
       ORDER BY e.created_at DESC
     `, [req.session.userId]);
@@ -59,8 +59,8 @@ const getExpenseByCategory = async (req, res) => {
     const [rows] = await db.query(`
         SELECT e.id, e.amount, e.description, e.created_at, c.name AS category
         FROM expenses e
-        JOIN categories c ON e.categoryId = c.id
-        WHERE e.user_id = ? AND e.categoryId = ?
+        JOIN categories c ON e.category_id = c.id
+        WHERE e.user_id = ? AND e.category_id = ?
         ORDER BY e.created_at DESC
         `, [req.session.userId, category]);
 
@@ -76,8 +76,11 @@ const getExpenseByMonth = async (req, res) => {
   try {
     const { month } = req.params;
     const [rows] = await db.query(`
-      SELECT * FROM expenses
-      WHERE user_id=? AND MONTH(created_at)=?
+      SELECT e.id, e.amount, e.description, e.created_at, c.name AS category
+      FROM expenses e
+      JOIN categories c ON e.category_id = c.id
+      WHERE e.user_id=? AND MONTH(e.created_at)=?
+      ORDER BY e.created_at DESC
     `, [req.session.userId, month]);
     res.json(rows);
   } 
@@ -97,7 +100,7 @@ const spendingPerMonth = async (req, res) => {
         SUM(e.amount) AS total
       FROM expenses e
       WHERE e.user_id = ?
-      GROUP BY month_num
+      GROUP BY month_num, month
       ORDER BY month_num
     `, [req.session.userId]);
     res.json(rows);
@@ -178,7 +181,7 @@ const getReport = async (req, res) => {
         - Be gentle and tell the exact spending habit of the user based exactly on the given data
     `;
     const response = await groq.chat.completions.create({
-      model: "llama3-70b-8192",
+      model: "llama-3.3-70b-versatile",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.2
     });
