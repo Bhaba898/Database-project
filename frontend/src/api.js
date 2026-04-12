@@ -1,4 +1,6 @@
-export const API_BASE = "http://localhost:3000";
+import BASE_URL from "../config";
+
+export const API_BASE = BASE_URL||"http://localhost:3000";
 
 const customFetch = async (endpoint, options = {}) => {
   const url = `${API_BASE}${endpoint}`;
