@@ -1,4 +1,4 @@
-import BASE_URL from "../config";
+import BASE_URL from "./config";
 
 export const API_BASE = BASE_URL||"http://localhost:3000";
 
