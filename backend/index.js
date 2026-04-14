@@ -9,7 +9,7 @@ const expenses=require("./routes/expenses.js");
 const app = express();
 
 app.use(cors({
-  origin: "*",
+  origin: "https://database-project-qhch.vercel.app/",
   credentials: true,                
 }));
 
